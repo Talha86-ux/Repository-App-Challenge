@@ -1,0 +1,8 @@
+<%= form_for :repository, url: repository_form_url do |f| %>
+
+  <%= f.text_field :name %>
+  <%= f.text_area :description %>
+  <%#= f.select :user_id, options_for_select(User.all.collect{ |e| [e.entity, e.entity] }, 1 ), {prompt: '-Select-', :multiple => true}, { id: my_entity'} %>
+  <%= f.submit %>
+
+<% end %>
