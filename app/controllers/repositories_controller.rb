@@ -29,6 +29,8 @@ class RepositoriesController < ApplicationController
   end
 
   def destroy
+    @repository.destroy
+    flash[:alert] = "Repository has been deleted!"
   end
 
   private 
