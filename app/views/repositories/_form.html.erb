@@ -1,8 +1,10 @@
 <%= form_for :repository, url: repository_form_url do |f| %>
-
+  <%= f.label :title%>
   <%= f.text_field :name %>
+  <%= f.label :description%>
   <%= f.text_area :description %>
-  <%#= f.select :user_id, options_for_select(User.all.collect{ |e| [e.entity, e.entity] }, 1 ), {prompt: '-Select-', :multiple => true}, { id: my_entity'} %>
+  <%= f.label :select_users%>
+  <%= f.select :users, options_for_select([['Select', '']] + User.pluck(:first_name, :id)), { include_hidden: false }, { multiple: true, class: "selectize" } %>
   <%= f.submit %>
 
 <% end %>
