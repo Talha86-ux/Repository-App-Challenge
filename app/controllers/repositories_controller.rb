@@ -40,6 +40,6 @@ class RepositoriesController < ApplicationController
   end
 
   def repository_params
-    params.require(:repository).permit(:name, :description, :users => [])
+    params.require(:repository).permit(:name, :description, :assign_users => [])
   end
 end

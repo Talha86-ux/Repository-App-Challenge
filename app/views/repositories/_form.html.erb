@@ -4,7 +4,7 @@
   <%= f.label :description%>
   <%= f.text_area :description %>
   <%= f.label :select_users%>
-  <%= f.select :users, options_for_select([['Select', '']] + User.pluck(:first_name, :id)), { include_hidden: false }, { multiple: true, class: "selectize" } %>
+  <%= f.select :assign_users, options_for_select([['Select', '']] + User.pluck(:first_name, :id)), { include_hidden: false }, { multiple: true, class: "selectize" } %>
   <%= f.submit %>
 
 <% end %>
