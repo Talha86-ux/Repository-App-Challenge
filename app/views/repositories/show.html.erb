@@ -1,1 +1,23 @@
-<h2>Reposiory</h2>
+<div class="container">
+  <h2>Repository Details</h2>            
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><%= @repository&.name%></td>
+        <td><%= @repository&.description%></td>
+        <td>
+        <%= link_to 'Edit', edit_repository_path%>
+        <%= button_to 'Delete', @repository.persisted? ? repository_path(@repository) : repositories_path, method: :delete, onclick: "return confirm('Are you sure?')" %>
+
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -24,13 +24,15 @@ class RepositoriesController < ApplicationController
     if @repository = Repository.update(repository_params)
       redirect_to repository_path, notice: "Repository updated successfully!"
     else
+      flash[:alert] = "Couldn't update the record."
       render :edit
     end
   end
 
   def destroy
     @repository.destroy
-    flash[:alert] = "Repository has been deleted!"
+    flash[:notice] = "Repository has been deleted!"
+    redirect_to repositories_path
   end
 
   private 

@@ -1,4 +1,4 @@
-<%= form_for :repository, url: repository_form_url do |f| %>
+<%= form_for :repository, url: url_for(action: @repository.persisted? ? :update : :create, id: @repository), method: @repository.persisted? ? :patch : :post do |f| %>
   <%= f.label :title%>
   <%= f.text_field :name %>
   <%= f.label :description%>
