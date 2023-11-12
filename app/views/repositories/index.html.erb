@@ -1,9 +1,11 @@
-<h1>Repository List </h1>
-<% @repositories.each do |repo| %>
-  Name: <%= repo.name %>
-  Description: <%= repo.description %>
-   <%#= display_repository_users(repo.assign_users) %>
+<section class='repoList'>
+  <h4>Repository List </h4>
+  <% @repositories.each do |repo| %>
+    <li>
+      <ul><%= link_to repo.name, repository_path(repo.id)%></ul>
+    </li>
+  <%end%>
   </br>
-<%end%>
 
-<%= link_to 'New Repository', new_repository_path, class: 'btn btn-secondary'%>
+  <%= link_to 'New Repository', new_repository_path, class: 'btn btn-info'%>
+<section>

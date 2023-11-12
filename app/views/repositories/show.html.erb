@@ -14,10 +14,10 @@
         <td><%= @repository&.description%></td>
         <td>
         <%= link_to 'Edit', edit_repository_path%>
-        <%= button_to 'Delete', @repository.persisted? ? repository_path(@repository) : repositories_path, method: :delete, onclick: "return confirm('Are you sure?')" %>
-
+        <%= button_to 'Delete', @repository.persisted? ? repository_path(@repository) : repositories_path, method: :delete, onclick: "return confirm('Are you sure?')", class: 'btn btn-danger' %>
         </td>
       </tr>
     </tbody>
   </table>
+  <%= link_to 'Back', repositories_path, class: 'btn btn-primary'%>
 </div>
