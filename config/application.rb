@@ -18,5 +18,9 @@ module RepositoryChallenge
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    config.autoloader = :zeitwerk
+    config.debug_loaders = false
+
   end
 end
