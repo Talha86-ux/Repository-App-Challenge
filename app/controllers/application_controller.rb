@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
   end
 
   def current_user
-    user ||= User.find_by(id: user_id)
+    user ||= User.find_by(id: params[:id])
   end
 
   def logged_in?
