@@ -5,6 +5,8 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :users, only: [:create, :show]
       resources :sessions, only: [:create, :show]
+      post 'forgot-password', to: 'passwords#forgot_password'
+      post 'update-password', to: 'passwords#update_password'
     end
   end
 end
