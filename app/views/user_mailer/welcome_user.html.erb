@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Welcome to Our App</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+      }
+      .header {
+        text-align: center;
+        background-color: #007bff;
+        color: white;
+        padding: 10px;
+        border-radius: 5px 5px 0 0;
+      }
+      .content {
+        margin-top: 20px;
+      }
+      .footer {
+        margin-top: 30px;
+        font-size: 0.9em;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Welcome to Our App, <%= @user.first_name %>!</h1>
+      </div>
+      <div class="content">
+        <p>Hi <%= @user.first_name %>,</p>
+        <p>
+          Thank you for signing up! We're excited to have you on board. Below are your account details:
+        </p>
+        <ul>
+          <li><strong>Email:</strong> <%= @user.email %></li>
+          <li><strong>Sign-up Date:</strong> <%= @user.created_at.strftime("%B %d, %Y") %></li>
+        </ul>
+        <p>
+          To get started, visit our website and log in to explore all the features waiting for you!
+        </p>
+        <p>
+          If you have any questions, feel free to reply to this email or reach out to our support team.
+        </p>
+        <p>
+          Cheers,<br>
+          The Team
+        </p>
+      </div>
+      <div class="footer">
+        <p>
+          &copy; <%= Time.now.year %> Our App. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
