@@ -7,6 +7,8 @@ class Api::V1::UsersController < ApplicationController
     if user.save
       token = issue_token(user)
       render json: { user: Api::V1::UserSerializer.new(user), jwt: token }
+
+      UserMailer.welcome_user(user).deliver_now
     else
       render json: { error: user.errors.messages || "Couldn't create a new user! Please try again." }
     end
