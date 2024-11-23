@@ -32,7 +32,25 @@
         font-size: 0.9em;
         color: #555;
       }
+      .verifyButton {
+        background-color: #04AA6D; /* Green */
+        border: none;
+        color: white;
+        padding: 12px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        margin: 3px 1px;
+        cursor: pointer;
+        border-radius: 15%;
+      }
     </style>
+    <script>
+      function verifyAccount(){
+        alert("Verify action triggered")
+      }
+    </script>
   </head>
   <body>
     <div class="container">
@@ -49,11 +67,10 @@
           <li><strong>Sign-up Date:</strong> <%= @user.created_at.strftime("%B %d, %Y") %></li>
         </ul>
         <p>
-          To get started, visit our website and log in to explore all the features waiting for you!
+          To get started, Please confirm your email address!
         </p>
-        <p>
-          If you have any questions, feel free to reply to this email or reach out to our support team.
-        </p>
+
+        <button class="verifyButton" onclick=verifyAccount()>Verify Now</button>
         <p>
           Cheers,<br>
           The Team
