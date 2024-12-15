@@ -14,6 +14,18 @@ class Api::V1::UsersController < ApplicationController
     end
   end
 
+  def verify_user
+    @user = User.find(params[:id])
+    if @user.present?
+      @user.update(is_verified: true)
+      respond_to do |format|
+        format.js {render 'Account verified successfully!'}
+      end
+    else
+      render json: {success: false, message: 'Problem verifying account, Please try again! '}
+    end
+  end
+
   private
 
   def user_params

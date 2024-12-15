@@ -16,3 +16,31 @@ import "channels"
 Rails.start()
 Turbolinks.start()
 ActiveStorage.start()
+
+// document.addEventListener('DOMContentLoaded', () => {
+//   const buttons = document.querySelectorAll('.verifyButton');
+
+//   buttons.forEach(button => {
+//     button.addEventListener('click', () => {
+//       const userId = button.getAttribute('data-user-id');
+
+//       fetch(`/api/v1/users/${userId}/verify_user`, {
+//         method: 'PATCH',
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+//         },
+//         body: JSON.stringify({ verified: true })
+//       })
+//       .then(response => response.json())
+//       .then(data => {
+//         if (data.success) {
+//           alert('User verified successfully!');
+//         }
+//       })
+//       .catch(error => {
+//         console.error('Error:', error);
+//       });
+//     });
+//   });
+// });

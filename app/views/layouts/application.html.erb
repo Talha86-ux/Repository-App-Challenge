@@ -1,29 +1,24 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= content_for?(:title) ? yield(:title) : "Repository Challenge" %></title>
-    <meta name="description" content="<%= content_for?(:description) ? yield(:description) : "About Sharks" %>">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= content_for?(:title) ? yield(:title) : "Repository Challenge" %></title>
+  <meta name="description" content="<%= content_for?(:description) ? yield(:description) : "About Sharks" %>">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+  <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+  <%= stylesheet_link_tag 'repositories', media: 'all', 'data-turbolinks-track': 'reload' %>
+</head>
+<body>
+  <main role="main">
+    <%= content_for?(:content) ? yield(:content) : yield %>
+  </main>
 
-    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%#= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
-    <%= stylesheet_link_tag 'repositories', media: 'all', 'data-turbolinks-track': 'reload' %>
-
-  </head>
-
-  <body>
-   
-    <main role="main">
-      <%= content_for?(:content) ? yield(:content) : yield %>
-    </main>
-
-    <% if flash[:alert] %>
-      <div id="alert">
-         <%= flash[:alert] %> 
-      </div>
-    <% end %>
-  </body>
+  <% if flash[:alert] %>
+    <div id="alert">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+</body>
 </html>

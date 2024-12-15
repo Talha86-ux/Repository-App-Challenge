@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  before_action :set_content_security_policy_nonce
 
   def jwt_key
     Rails.application.credentials.jwt_key
@@ -34,5 +35,11 @@ class ApplicationController < ActionController::Base
 
   def logged_in?
     !!current_user
+  end
+
+  private
+
+  def set_content_security_policy_nonce
+    @content_security_policy_nonce = SecureRandom.base64(16)
   end
 end
