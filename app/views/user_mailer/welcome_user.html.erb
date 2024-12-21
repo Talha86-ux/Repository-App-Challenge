@@ -1,69 +1,112 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Welcome to Our App</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        color: #333;
-      }
-      .container {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-      }
-      .header {
-        text-align: center;
-        background-color: #007bff;
-        color: white;
-        padding: 10px;
-        border-radius: 5px 5px 0 0;
-      }
-      .content {
-        margin-top: 20px;
-      }
-      .footer {
-        margin-top: 30px;
-        font-size: 0.9em;
-        color: #555;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <div class="header">
-        <h1>Welcome to Our App, <%= @user.first_name %>!</h1>
-      </div>
-      <div class="content">
-        <p>Hi <%= @user.first_name %>,</p>
-        <p>
-          Thank you for signing up! We're excited to have you on board. Below are your account details:
-        </p>
-        <ul>
-          <li><strong>Email:</strong> <%= @user.email %></li>
-          <li><strong>Sign-up Date:</strong> <%= @user.created_at.strftime("%B %d, %Y") %></li>
-        </ul>
-        <p>
-          To get started, visit our website and log in to explore all the features waiting for you!
-        </p>
-        <p>
-          If you have any questions, feel free to reply to this email or reach out to our support team.
-        </p>
-        <p>
-          Cheers,<br>
-          The Team
-        </p>
-      </div>
-      <div class="footer">
-        <p>
-          &copy; <%= Time.now.year %> Our App. All rights reserved.
-        </p>
-      </div>
+<head>
+  <title>Welcome to Our App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+    .header {
+      text-align: center;
+      background-color: #007bff;
+      color: white;
+      padding: 10px;
+      border-radius: 5px 5px 0 0;
+    }
+    .content {
+      margin-top: 20px;
+    }
+    .footer {
+      margin-top: 30px;
+      font-size: 0.9em;
+      color: #555;
+    }
+    .verifyButton {
+      background-color: #04AA6D; /* Green */
+      border: none;
+      color: white;
+      padding: 12px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      margin: 3px 1px;
+      cursor: pointer;
+      border-radius: 15%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Welcome to Our App, <%= @user.first_name %>!</h1>
     </div>
-  </body>
+    <div class="content">
+      <p>Hi <%= @user.first_name %>,</p>
+      <p>
+        Thank you for signing up! We're excited to have you on board. Below are your account details:
+      </p>
+      <ul>
+        <li><strong>Email:</strong> <%= @user.email %></li>
+        <li><strong>Sign-up Date:</strong> <%= @user.created_at.strftime("%B %d, %Y") %></li>
+      </ul>
+      <p>
+        To get started, Please confirm your email address!
+      </p>
+
+      <button data-user-id="<%= @user.id %>" class="verifyButton">Verify Now</button>
+      <p>
+        Cheers,<br>
+        The Team
+      </p>
+    </div>
+    <div class="footer">
+      <p>
+        &copy; <%= Time.now.year %> Our App. All rights reserved.
+      </p>
+    </div>
+  </div>
+
+  <script nonce="<%= @content_security_policy_nonce %>">
+    document.addEventListener('DOMContentLoaded', () => {
+      const button = document.querySelector('.verifyButton');
+
+      if (button) {
+        button.addEventListener('click', () => {
+          const csrfToken = csrfMetaTag.content;
+          const userId = button.getAttribute('data-user-id');
+
+          fetch(`/users/${userId}/verify`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': csrfToken
+            },
+            body: JSON.stringify({ verified: true })
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log("Returned data: ", data);
+            if (data.success) {
+              alert('User verified successfully!');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        });
+      }
+    });
+  </script>
+</body>
 </html>
