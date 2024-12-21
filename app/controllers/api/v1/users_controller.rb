@@ -1,6 +1,6 @@
 class Api::V1::UsersController < ApplicationController
-  protect_from_forgery with: :null_session
   skip_before_action :verify_authenticity_token
+  protect_from_forgery except: :verify_user
 
   def create
     user = User.new(user_params)

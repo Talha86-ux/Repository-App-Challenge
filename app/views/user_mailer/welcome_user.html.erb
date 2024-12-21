@@ -45,7 +45,6 @@
       border-radius: 15%;
     }
   </style>
-  <%= csrf_meta_tags %>
 </head>
 <body>
   <div class="container">
@@ -84,13 +83,7 @@
 
       if (button) {
         button.addEventListener('click', () => {
-          const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-          console.log("Token:", csrfToken)
-          if (!csrfToken) {
-            console.error('CSRF token not found');
-            return;
-          }
-
+          const csrfToken = csrfMetaTag.content;
           const userId = button.getAttribute('data-user-id');
 
           fetch(`/users/${userId}/verify`, {

@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::Base
+  protect_from_forgery with: :exception
   before_action :set_content_security_policy_nonce
 
   def jwt_key
@@ -41,5 +42,6 @@ class ApplicationController < ActionController::Base
 
   def set_content_security_policy_nonce
     @content_security_policy_nonce = SecureRandom.base64(16)
+    response.headers['Content-Security-Policy'] = "script-src 'self' 'nonce-#{@content_security_policy_nonce}';"
   end
 end
