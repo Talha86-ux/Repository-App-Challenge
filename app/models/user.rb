@@ -3,6 +3,8 @@ class User < ApplicationRecord
 
   has_many :user_repositories
   has_many :repositories, through: :user_repositories
+  has_many :messages
+  has_many :chatrooms, through: :messages
 
   validates :first_name, presence: {message: 'This field is required.'}
   validates :last_name, presence: {message: 'This field is required.'}

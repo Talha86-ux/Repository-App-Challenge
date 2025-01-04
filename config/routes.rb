@@ -6,12 +6,16 @@ Rails.application.routes.draw do
       resources :users, only: [:create, :show] do
         member do
           patch :verify_user
+          get :chatrooms
         end
       end
 
+      resources :chatrooms, only: [:index, :create, :show]
+      resources :messages, only: [:index, :create]
       resources :sessions, only: [:create, :show]
       post 'forgot-password', to: 'passwords#forgot_password'
       post 'update-password', to: 'passwords#update_password'
     end
   end
+  mount ActionCable.server => './cable'
 end
