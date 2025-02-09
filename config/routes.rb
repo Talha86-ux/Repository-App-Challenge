@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   resources :repositories
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
-      resources :users, only: [:create, :show] do
+      resources :users, only: [:create, :show, :index] do
         member do
           patch :verify_user
           get :chatrooms
