@@ -3,7 +3,7 @@ class Api::V1::ChatroomsController < ApplicationController
 
   def index 
     chatrooms = Chatroom.all
-    render json: chatrooms
+    render json: chatrooms.as_json(only: [:id, :name])
   end
 
   def create

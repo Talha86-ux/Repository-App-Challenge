@@ -1,7 +1,7 @@
 class ChatroomChannel < ApplicationCable::Channel
   def subscribed
-    stream_from "#{params["channel"]}"
-    ActionCable.server.broadcast("#{params["channel"]}", message: 'Channel Subscribed')
+    stream_from "ChatroomChannel_#{params[:chatroom_id]}"
+    ActionCable.server.broadcast("ChatroomChannel_#{params[:chatroom_id]}", message: 'Channel Subscribed')
   end
 
   def unsubscribed
@@ -10,12 +10,17 @@ class ChatroomChannel < ApplicationCable::Channel
 
   def send_message(data)
     user = User.find(data['user_id'])
-    channel = Chatroom.find(data['chatroom_id'])
-    byebug     
-    message = Message.create!(user: user, body: data['content'])
+    chatroom = Chatroom.find(data['chatroom_id'])
+    message = Message.create!(user: user, chatroom: chatroom, body: data['content'])
 
-    ActionCable.server.broadcast("#{params["channel"]}", {
+    ActionCable.server.broadcast("ChatroomChannel_#{data['chatroom_id']}", {
       message: render_message(message)
     })
+  end
+
+  private
+
+  def render_message(message)
+    ApplicationController.renderer.render(partial: 'messages/message', locals: { message: message })
   end
 end

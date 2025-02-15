@@ -1,8 +1,7 @@
-API::V1::class MessagesController < ApplicationController
-
+class Api::V1::MessagesController < ApplicationController
   def index
-    messages = Message.where(chatroom_id: params[:chatroom_id]).order(id: :asc)
-    render json: messages
+    messages = Message.all
+    render json: messages.as_json(only: [:body], include: { user: { only: [:id, :first_name] } })
   end
 
   def create
@@ -11,9 +10,9 @@ API::V1::class MessagesController < ApplicationController
     message = chatroom.messages.build(message_params)
 
     if message.save
-      ActionCable.server.broadcast('chatroom_channel', message: message.content, user: user.first_name)
+      ActionCable.server.broadcast('chatroom_channel', message: message.body, user: user.first_name)
     else
-      render json: message.errors.full_messages, status: :unprocessable_entity
+      render json: { errors: message.errors.full_messages }, status: 422
     end
   end
 
@@ -23,6 +22,7 @@ API::V1::class MessagesController < ApplicationController
   end
 
   private
+
   def message_params
     params.require(:message).permit(:body, :user_id, :chatroom_id)
   end
