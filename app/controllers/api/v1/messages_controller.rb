@@ -1,29 +1,24 @@
 class Api::V1::MessagesController < ApplicationController
   def index
-    messages = Message.all
-    render json: messages.as_json(only: [:body], include: { user: { only: [:id, :first_name] } })
+    chatroom = Chatroom.find(params[:chatroom_id])
+    messages = chatroom.messages.order(created_at: :asc)
+    render json: messages.as_json(only: [:body, :user_id])
   end
 
   def create
-    user = User.find(params[:message][:user_id])
-    chatroom = Chatroom.find(params[:message][:chatroom_id])
-    message = chatroom.messages.build(message_params)
+    chatroom = Chatroom.find(params[:chatroom_id])
+    message = chatroom.messages.build(message_params.merge(user_id: current_user.id))
 
     if message.save
-      ActionCable.server.broadcast('chatroom_channel', message: message.body, user: user.first_name)
+      render json: message, status: :created
     else
-      render json: { errors: message.errors.full_messages }, status: 422
+      render json: { errors: message.errors.full_messages }, status: :unprocessable_entity
     end
-  end
-
-  def destroy
-    message = Message.find(params[:message_id])
-    message.destroy
   end
 
   private
 
   def message_params
-    params.require(:message).permit(:body, :user_id, :chatroom_id)
+    params.require(:message).permit(:body, :user_id)
   end
 end

@@ -14,7 +14,14 @@ class ChatroomChannel < ApplicationCable::Channel
     message = Message.create!(user: user, chatroom: chatroom, body: data['content'])
 
     ActionCable.server.broadcast("ChatroomChannel_#{data['chatroom_id']}", {
-      message: render_message(message)
+      message: {
+        id: message.id,
+        body: message.body,
+        user: {
+          id: user.id,
+          first_name: user.first_name
+        }
+      }
     })
   end
 
