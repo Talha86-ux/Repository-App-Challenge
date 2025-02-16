@@ -10,8 +10,9 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :chatrooms, only: [:index, :create, :show]
-      resources :messages, only: [:index, :create]
+      resources :chatrooms, only: [:index, :create, :show] do
+        resources :messages, only: [:index, :create]
+      end
       resources :sessions, only: [:create, :show]
       post 'forgot-password', to: 'passwords#forgot_password'
       post 'update-password', to: 'passwords#update_password'
