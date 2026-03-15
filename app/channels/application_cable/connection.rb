@@ -10,7 +10,14 @@ module ApplicationCable
 
     def find_verified_user
       token = request.params[:token] || request.headers["Authorization"]&.split(" ")&.last
-      decoded_token = JWT.decode(token, JWT_SECRET_KEY, true, { algorithm: JWT_ALGORITHM })
+      reject_unauthorized_connection unless token.present?
+
+      decoded_token = begin
+        JWT.decode(token, JWT_SECRET_KEY, true, { algorithm: JWT_ALGORITHM })
+      rescue JWT::DecodeError, JWT::VerificationError, JWT::ExpiredSignature => _exception
+        nil
+      end
+
       if decoded_token && (user = User.find_by(id: decoded_token.first["user_id"]))
         user
       else
