@@ -9,20 +9,24 @@ class ChatroomChannel < ApplicationCable::Channel
   end
 
   def send_message(data)
-    user = User.find(data['user_id'])
-    chatroom = Chatroom.find(data['chatroom_id'])
-    message = Message.create!(user: user, chatroom: chatroom, body: data['content'])
+    begin
+      chatroom = Chatroom.find(data['chatroom_id'])
+      message = Message.create!(user: current_user, chatroom: chatroom, body: data['content'])
 
-    ActionCable.server.broadcast("ChatroomChannel_#{data['chatroom_id']}", {
-      message: {
-        id: message.id,
-        body: message.body,
-        user: {
-          id: user.id,
-          first_name: user.first_name
+      ActionCable.server.broadcast("ChatroomChannel_#{data['chatroom_id']}", {
+        message: {
+          id: message.id,
+          body: message.body,
+          created_at: message.created_at,
+          user: {
+            id: current_user.id,
+            first_name: current_user.first_name
+          }
         }
-      }
-    })
+      })
+    rescue StandardError => e
+      Rails.logger.error("ActionCable broadcast error: #{e.message}")
+    end
   end
 
   private
