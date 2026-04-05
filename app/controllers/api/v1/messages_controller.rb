@@ -2,7 +2,14 @@ class Api::V1::MessagesController < ApplicationController
   def index
     chatroom = Chatroom.find(params[:chatroom_id])
     messages = chatroom.messages.order(created_at: :asc)
-    render json: messages.as_json(only: [:body, :user_id])
+    render json: messages.as_json(
+      only: [:id, :body, :user_id, :created_at],
+      include: {
+        user: {
+          only: [:id, :first_name]
+        }
+      }
+    )
   end
 
   def create
@@ -10,7 +17,14 @@ class Api::V1::MessagesController < ApplicationController
     message = chatroom.messages.build(message_params.merge(user_id: current_user.id))
 
     if message.save
-      render json: message, status: :created
+      render json: message.as_json(
+        only: [:id, :body, :user_id, :created_at],
+        include: {
+          user: {
+            only: [:id, :first_name]
+          }
+        }
+      ), status: :created
     else
       render json: { errors: message.errors.full_messages }, status: :unprocessable_entity
     end
