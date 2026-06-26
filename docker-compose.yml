@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: repository-challenge-app
+    ports:
+      - "3000:3000"
+    environment:
+      RAILS_ENV: production
+      RACK_ENV: production
+      RAILS_LOG_TO_STDOUT: "true"
+      # Add your secret key here or use .env file
+      # RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+    volumes:
+      # Persistent volume for SQLite database
+      - ./storage:/app/storage
+      - ./log:/app/log
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
