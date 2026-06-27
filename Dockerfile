@@ -46,6 +46,8 @@ RUN yarn install --frozen-lockfile
 COPY . .
 
 # Precompile assets
+ARG RAILS_MASTER_KEY
+ENV RAILS_MASTER_KEY=$RAILS_MASTER_KEY
 RUN bundle exec rails assets:precompile
 
 # Stage 2: Runtime
