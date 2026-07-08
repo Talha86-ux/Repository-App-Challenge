@@ -13,11 +13,11 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     postgresql-client \
-
-    libpq-dev \
+    sqlite3 \
+    libsqlite3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
     apt-get install -y nodejs && \
     npm install -g yarn && \
     rm -rf /var/lib/apt/lists/*
@@ -39,27 +39,13 @@ FROM ruby:2.7.4-slim
 ENV RAILS_ENV=production \
     RACK_ENV=production \
     BUNDLE_PATH=/usr/local/bundle \
-    RAILS_LOG_TO_STDOUT=true \
-    NODE_OPTIONS=--openssl-legacy-provider
+    RAILS_LOG_TO_STDOUT=true
 
-RUN apt-get update && apt-get install -y \
-
-    postgresql-client \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs && \
-    npm install -g yarn && \
-    rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
 
 COPY --from=builder /usr/local/bundle /usr/local/bundle
-COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app .
 
-RUN printf '#!/bin/bash\nset -e\n\necho "Precompiling assets..."\nyarn install --frozen-lockfile --cache-folder /tmp/yarn-cache && bundle exec rails assets:precompile\n\necho "Preparing database..."\nbundle exec rails db:create db:migrate\n\necho "Starting Rails server..."\nmkdir -p tmp/pids && exec bundle exec puma --config config/puma.rb\n' > /app/docker-entrypoint.sh && \
+RUN echo '#!/bin/bash\nset -e\n\necho "Precompiling assets..."\nbundle exec rails assets:precompile\n\necho "Preparing database..."\nbundle exec rails db:create db:migrate\n\necho "Starting Rails server..."\nexec bundle exec puma -c config/puma.rb' > /app/docker-entrypoint.sh && \
     chmod +x /app/docker-entrypoint.sh
 
 RUN useradd -m -u 1000 appuser && \
