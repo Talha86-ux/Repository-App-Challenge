@@ -1,36 +1,74 @@
+# Stage 1: Builder
+FROM ruby:2.7.4-slim as builder
+
+ENV RAILS_ENV=production \
+    RACK_ENV=production \
+    BUNDLE_PATH=/usr/local/bundle \
+    BUNDLE_JOBS=4 \
+    BUNDLE_RETRY=3 \
+    RAILS_LOG_TO_STDOUT=true
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    curl \
+    postgresql-client \
+
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g yarn && \
+    rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# Copy bundle from builder
-COPY --from=builder /usr/local/bundle /usr/local/bundle
+COPY Gemfile Gemfile.lock ./
+COPY package.json yarn.lock ./
 
-# Copy application from builder
+RUN bundle install --without development test
+
+RUN yarn install --frozen-lockfile
+
+COPY . .
+
+# Stage 2: Runtime
+FROM ruby:2.7.4-slim
+
+ENV RAILS_ENV=production \
+    RACK_ENV=production \
+    BUNDLE_PATH=/usr/local/bundle \
+    RAILS_LOG_TO_STDOUT=true \
+    NODE_OPTIONS=--openssl-legacy-provider
+
+RUN apt-get update && apt-get install -y \
+
+    postgresql-client \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g yarn && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY --from=builder /usr/local/bundle /usr/local/bundle
+COPY --from=builder /app/node_modules /app/node_modules
 COPY --from=builder /app .
 
-# Entrypoint script — create BEFORE switching user
-RUN echo '#!/bin/bash\n\
-set -e\n\
-\n\
-echo "Precompiling assets..."\n\
-bundle exec rails assets:precompile\n\
-\n\
-echo "Preparing database..."\n\
-bundle exec rails db:create db:migrate\n\
-\n\
-echo "Starting Rails server..."\n\
-exec bundle exec puma -c config/puma.rb' > /app/docker-entrypoint.sh && \
+RUN printf '#!/bin/bash\nset -e\n\necho "Precompiling assets..."\nyarn install --frozen-lockfile --cache-folder /tmp/yarn-cache && bundle exec rails assets:precompile\n\necho "Preparing database..."\nbundle exec rails db:create db:migrate\n\necho "Starting Rails server..."\nmkdir -p tmp/pids && exec bundle exec puma --config config/puma.rb\n' > /app/docker-entrypoint.sh && \
     chmod +x /app/docker-entrypoint.sh
 
-# Create non-root user for security
 RUN useradd -m -u 1000 appuser && \
     chown -R appuser:appuser /app
 USER appuser
 
-# Expose port
 EXPOSE 3000
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:3000/health || exit 1
 
-# ✅ This line was missing!
 ENTRYPOINT ["/app/docker-entrypoint.sh"]

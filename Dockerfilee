@@ -1,0 +1,60 @@
+# Stage 1: Builder
+FROM ruby:2.7.4-slim as builder
+
+ENV RAILS_ENV=production \
+    RACK_ENV=production \
+    BUNDLE_PATH=/usr/local/bundle \
+    BUNDLE_JOBS=4 \
+    BUNDLE_RETRY=3 \
+    RAILS_LOG_TO_STDOUT=true
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    git \
+    curl \
+    postgresql-client \
+    sqlite3 \
+    libsqlite3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g yarn && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY Gemfile Gemfile.lock ./
+COPY package.json yarn.lock ./
+
+RUN bundle install --without development test
+
+RUN yarn install --frozen-lockfile
+
+COPY . .
+
+# Stage 2: Runtime
+FROM ruby:2.7.4-slim
+
+ENV RAILS_ENV=production \
+    RACK_ENV=production \
+    BUNDLE_PATH=/usr/local/bundle \
+    RAILS_LOG_TO_STDOUT=true
+
+
+COPY --from=builder /usr/local/bundle /usr/local/bundle
+COPY --from=builder /app .
+
+RUN echo '#!/bin/bash\nset -e\n\necho "Precompiling assets..."\nbundle exec rails assets:precompile\n\necho "Preparing database..."\nbundle exec rails db:create db:migrate\n\necho "Starting Rails server..."\nexec bundle exec puma -c config/puma.rb' > /app/docker-entrypoint.sh && \
+    chmod +x /app/docker-entrypoint.sh
+
+RUN useradd -m -u 1000 appuser && \
+    chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:3000/health || exit 1
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
