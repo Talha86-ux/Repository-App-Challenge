@@ -24,6 +24,7 @@ gem 'jwt'
 gem 'active_model_serializers', '~> 0.10.0'
 gem 'rack-cors', :require => 'rack/cors'
 gem 'launchy', '~> 2.5'
+gem 'rack-attack'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use Active Model has_secure_password
